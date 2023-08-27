@@ -32,7 +32,7 @@ class EvalWorker:
      :param live_progress: Show progress for eval matches
     """
 
-    def __init__(self, match: Match, matchmaker: Matchmaker, output_file, tick_skip, send_gamestates=True,
+    def __init__(self, match: Match, matchmaker: Matchmaker, output_file, tick_skip, initial_actors, send_gamestates=True,
                  send_obs=True, scoreboard=None, pretrained_agents: PretrainedAgents = None,
                  live_progress=True
                  ):
@@ -63,6 +63,7 @@ class EvalWorker:
         self.env = rlgym_sim.gym.Gym(match=self.match, copy_gamestate_every_step=True, tick_skip=tick_skip, dodge_deadzone=0.5, gravity=1, boost_consumption=1)
         self.live_progress = live_progress
         self.fp = open(output_file, "a")
+        self.initial_actors = initial_actors
 
     def select_gamemode(self, equal_likelihood):
         mode = np.random.choice(list(self.current_weights.keys()), p=list(
@@ -108,16 +109,16 @@ class EvalWorker:
             blue, orange = self.select_gamemode(equal_likelihood=True)
             versions = self.matchmaker.generate_matchup(blue, orange)
             agents = []
-            for version in versions:
+            for idx, version in enumerate(versions):
                 # For any instances of HardcodedAgent, whose redis qualities keys are just the key in the keymap
                 if version in self.pretrained_agents_keymap:
                     selected_agent = self.pretrained_agents_keymap[version]
                 else:
                     file = "-".join(version.split("-")[:-1])
                     if version.endswith("deterministic"):
-                        selected_agent = Agent(file, 1)
+                        selected_agent = Agent(file, 1, self.initial_actors[idx])
                     elif version.endswith("stochastic"):
-                        selected_agent = Agent(file, 0.5)
+                        selected_agent = Agent(file, 0.5, self.initial_actors[idx])
                     else:
                         raise ValueError("Unknown version type")
                 agents.append(selected_agent)

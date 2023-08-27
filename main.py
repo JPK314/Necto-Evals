@@ -10,6 +10,7 @@ from rlgym_sim.utils.terminal_conditions.common_conditions import GoalScoredCond
 from rlgym_sim.utils.state_setters import DefaultState
 from rlgym_sim.utils.action_parsers import DefaultAction
 import sys
+import torch.jit
 
 set_num_threads(1)
 
@@ -41,6 +42,10 @@ if __name__ == "__main__":
     pretrained_agents = None
 
     matchmaker = Matchmaker(pretrained_agents=pretrained_agents)
+
+    initial_actors = []
+    for idx in range(6):
+        initial_actors.append(torch.jit.load("necto_rlbot_checkpoint.pt"))
 
     worker = EvalWorker(match,
                         matchmaker=matchmaker, output_file=sys.argv[1],

@@ -8,12 +8,11 @@ from torch.distributions import Categorical
 
 
 class Agent:
-    def __init__(self, file, beta):
+    def __init__(self, file, beta, initial_actor):
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(cur_dir, "models/necto-model.pt"), 'rb') as f:
-            self.actor = torch.jit.load(f)
         with open(os.path.join(cur_dir, f"models/{file}"), 'rb') as f:
             checkpoint = torch.load(f)
+        self.actor = initial_actor
         self.actor.load_state_dict(checkpoint["actor_state_dict"])
         torch.set_num_threads(1)
         self.beta = beta
