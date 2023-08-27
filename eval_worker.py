@@ -61,6 +61,7 @@ class EvalWorker:
         match._state_setter = state_setter
         self.match = match
         self.env = rlgym_sim.gym.Gym(match=self.match, copy_gamestate_every_step=True, tick_skip=tick_skip, dodge_deadzone=0.5, gravity=1, boost_consumption=1)
+        self.tick_skip = tick_skip
         self.live_progress = live_progress
         self.fp = open(output_file, "a")
         self.initial_actors = initial_actors
@@ -125,7 +126,7 @@ class EvalWorker:
 
             self.set_team_size(blue, orange)
 
-            result = generate_episode(self.env, agents, versions, progress=self.live_progress, scoreboard=self.scoreboard)
+            result = generate_episode(self.env, agents, versions, progress=self.live_progress, scoreboard=self.scoreboard, tick_skip=self.tick_skip)
             self.fp.write(f"{versions[0]},{versions[-1]},{blue},{orange},{result['blue']},{result['orange']}\n")
             self.fp.flush()
             print(f"{versions[0]},{versions[-1]},{blue},{orange},{result['blue']},{result['orange']}")

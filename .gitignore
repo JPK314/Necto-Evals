@@ -3,3 +3,4 @@ models/
 all_models/
 collision_meshes/
 __pycache__/
+outputs/*

@@ -50,7 +50,8 @@ if __name__ == "__main__":
     worker = EvalWorker(match,
                         matchmaker=matchmaker, output_file=sys.argv[1],
                         pretrained_agents=pretrained_agents,
-                        tick_skip=frame_skip, live_progress=False
+                        tick_skip=frame_skip, live_progress=False,
+                        initial_actors=initial_actors
                         )
 
     worker.env._match._obs_builder.env = worker.env  # noqa
